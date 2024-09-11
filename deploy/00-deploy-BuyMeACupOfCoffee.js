@@ -6,32 +6,32 @@ const {
   developmentChains,
 } = require("../hardhat-config-helper");
 
-const router = "0x0bf3de8c5d3e8a2b34d2beeb17abfcebaf363a59";
-const link = "0x779877a7b0d9e8603169ddbd7836e478b4624789";
+const owner = "0x294e0bCC654D249eA6EF17f9f83d20B58999C921";
+
 module.exports = async ({ getNamedAccounts, deployments }) => {
   const { deploy, log } = deployments;
   const { deployer } = await getNamedAccounts();
   const chainId = network.config.chainId;
-  let sender;
+  let contract;
 
   if (chainId == 11155111) {
-    log("Deploying sender ...");
-    sender = await deploy("DataSender", {
-      contract: "DataSender",
+    log("Deploying BuyMeACupOfCoffee ...");
+    contract = await deploy("BuyMeACupOfCoffee", {
+      contract: "BuyMeACupOfCoffee",
       from: deployer,
       log: true,
-      args: [router, link],
+      args: [owner],
       waitConfirmations: network.config.blockConfirmations || 1,
     });
     log("Deployed!");
     log("------------------------------------------------");
-    log(`DataSender deployed at ${sender.address}`);
+    log(`BuyMeACupOfCoffee deployed at ${contract.address}`);
 
-    // if (
-    //   !developmentChains.includes(network.name) &&
-    //   process.env.ETHERSCAN_API_KEY
-    // ) {
-    //   await verify(sender.address, [router, link]);
-    // }
+    if (
+      !developmentChains.includes(network.name) &&
+      process.env.ETHERSCAN_API_KEY
+    ) {
+      await verify(contract.address, [owner]);
+    }
   }
 };
